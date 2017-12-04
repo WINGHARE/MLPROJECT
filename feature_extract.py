@@ -161,6 +161,29 @@ def get_data():
 
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y2, test_size=0.4)
 
+    
+    '''
+    ### Here is for non-pca term vector
+    ### Replace co_matc_new with co_matc
+    
+    ##  Assign feature vector to each term
+    for i in range(0, co_matc.shape[0]):
+        term_dict[term_lst[i]] = co_matc[i] # np.array
+
+    ## Assign each vectorized term to original text
+    X = []
+    for tx in texts:
+        x = [] # each tweet is now a list of vectorized term
+        for t in tx.split(' '):
+            if t not in term_dict:
+                pass
+                # print(t + " not in term_dict")
+            else:
+                x.append(term_dict[t])
+        X.append(x)
+    print(len(X))
+    '''
+
     # We return training set test set X_train and X_test. Y_train and Y_test
     # And the encoder to encoder Y
     return X_train, X_test, Y_train, Y_test, ohenc
