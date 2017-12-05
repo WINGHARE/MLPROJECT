@@ -48,7 +48,7 @@ from scipy import interp
 
 
 
-def roc_plot(y_test,y_score,n_classes,filepath,title='ROC curve'):
+def roc_plot(y_test,y_score,n_classes,filepath,title='ROC curve',fmt='svg'):
     # Compute ROC curve and ROC area for each class
     fpr = dict()
     tpr = dict()
@@ -100,5 +100,5 @@ def roc_plot(y_test,y_score,n_classes,filepath,title='ROC curve'):
     plt.title(title)
     plt.legend(loc="lower right")
     plt.show()
-    plt.savefig(filepath)
+    plt.savefig(filepath,format=fmt)
     return
