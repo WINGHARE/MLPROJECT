@@ -166,7 +166,7 @@ def get_data():
     X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
 
 
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y2, test_size=0.4)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y2, test_size=0.4,random_state=10)
 
     
     '''

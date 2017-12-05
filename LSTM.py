@@ -24,12 +24,12 @@ import matplotlib.pyplot as plt
 import numpy as np  # linear algebra
 import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
 from keras.callbacks import Callback, ModelCheckpoint
-from keras.layers import (LSTM, AveragePooling2D, Conv2D, Dense, Embedding,
+from keras.layers import (LSTM,GRU, AveragePooling2D, Conv2D, Dense, Embedding,
                           Flatten,MaxPooling2D)
 from keras.models import Sequential
 from keras.utils.np_utils import to_categorical
 from sklearn.metrics import (classification_report, fbeta_score,
-                             precision_score, recall_score, accuracy_score)
+                             precision_score, recall_score,accuracy_score)
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils import shuffle
@@ -82,8 +82,64 @@ class TestCallback(Callback):
         loss, acc, recall, pre, f1 = self.model.evaluate(x, y, verbose=0)
         print('\nTesting loss: {}, acc: {}\n'.format(loss, acc))
 
-
 def bulid_model(X_train,
+                X_test,
+                Y_train,
+                Y_test,
+                CID,
+                fromfile='none'):
+    model = Sequential()
+    model.add(
+        LSTM(
+            16,
+            return_sequences=True,
+            input_shape=X_train[0].shape,
+            dropout=0.2,
+            recurrent_dropout=0.2))
+    model.add(LSTM(18, return_sequences=False, dropout=0.2))
+    model.add(Dense(256, activation='tanh'))
+    model.add(Dense(2, activation='softmax'))
+
+    if (fromfile == 'none'):
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer='adam',
+            metrics=['accuracy', recall, precision, f1score])
+        print(model.summary())
+
+        batch_size = 32
+
+        checkpointer = ModelCheckpoint(
+            filepath=os.path.join('tmp', 'weights_' + CID + '.hdf5'),
+            verbose=1,
+            save_best_only=True)
+
+        model.fit(
+            X_train,
+            Y_train,
+            epochs=15,
+            batch_size=batch_size,
+            verbose=1,
+            validation_data=(X_test, Y_test),
+            callbacks=[checkpointer])
+
+        model.save_weights(
+            filepath=os.path.join('tmp', 'weights_' + CID + '.hdf5'))
+        return model
+
+    else:
+        filepath = os.path.join('tmp', fromfile)
+        model.load_weights(filepath=filepath)
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer='adam',
+            metrics=['accuracy', recall, precision, f1score])
+        print(model.summary())
+        return model
+
+    return model
+
+def bulid_model2(X_train,
                 X_test,
                 Y_train,
                 Y_test,
@@ -147,22 +203,26 @@ def main():
 
     # CID is used to run on the department cluster
 
-    CID = '10086'
+    CID = '8848'
 
     if (opts.load != 'none'): CID = opts.load
 
     X_train, X_test, Y_train, Y_test, enc = f.get_data()
 
+    X_train = X_train.reshape(X_train.shape[0],X_train.shape[1],X_train.shape[2])
+    X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],X_test.shape[2])
+
+
     print(X_train.shape)
 
     model = bulid_model(
-        X_train, X_test, Y_train, Y_test, CID, fromfile='weights_10086.hdf5')
+        X_train, X_test, Y_train, Y_test, CID, fromfile=opts.load)
 
 
     Y_score = model.predict_proba(X_test)
 
     roc.roc_plot(
-        Y_test, Y_score, 2, filepath=os.path.join('figures', CID + 'roc.svg'),title="CNN PCA MAX pool")
+        Y_test, Y_score, 2, filepath=os.path.join('figures', CID + 'roc.svg'),title="LSTM PCA")
 
     Y_de = decode_y(Y_test, features=enc.active_features_)
     Y_depred = np.argmax(Y_score,axis=1)
@@ -171,6 +231,7 @@ def main():
     print(np.argmax(Y_score,axis=1))
     print(classification_report(Y_de, Y_depred))
     print (accuracy_score(Y_de, Y_depred))
+
 
     return
 
