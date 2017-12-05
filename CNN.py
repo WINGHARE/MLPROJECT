@@ -97,7 +97,7 @@ def bulid_model(X_train,
             strides=(1, 1),
             padding='same',
             activation='relu',
-            input_shape=(X_train[0].shape[0],X_train[0].shape[1],1)))
+            input_shape=(X_train.shape[1],X_train.shape[2],1)))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
     model.add(Flatten())
     model.add(Dense(256, activation='tanh'))
@@ -152,6 +152,8 @@ def main():
     if (opts.load != 'none'): CID = opts.load
 
     X_train, X_test, Y_train, Y_test, enc = f.get_data()
+
+    print(X_train.shape)
 
     model = bulid_model(
         X_train, X_test, Y_train, Y_test, CID, fromfile=opts.load)

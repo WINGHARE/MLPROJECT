@@ -242,7 +242,7 @@ def get_data():
 
 def main():
 
-    get_data()
+    #get_data()
     # get_data2_emb()
     print("finish...")
 
