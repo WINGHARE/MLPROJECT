@@ -91,12 +91,12 @@ def bulid_model(X_train,
     model = Sequential()
     model.add(
         LSTM(
-            16,
+            32,
             return_sequences=True,
             input_shape=X_train[0].shape,
             dropout=0.2,
             recurrent_dropout=0.2))
-    model.add(LSTM(18, return_sequences=False, dropout=0.2))
+    model.add(LSTM(32, return_sequences=False, dropout=0.2))
     model.add(Dense(256, activation='tanh'))
     model.add(Dense(2, activation='softmax'))
 
