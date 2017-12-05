@@ -156,12 +156,11 @@ def main():
     model = bulid_model(
         X_train, X_test, Y_train, Y_test, CID, fromfile=opts.load)
 
-    newData = X_test.reshape(X_test.shape[0], 1, 100, 20)
 
     Y_score = model.predict_proba(X_test)
 
     roc.roc_plot(
-        Y_test, Y_score, 2, filepath=os.path.join('figures', CID + 'roc.jpg'),title="CNN 2D AVG pool")
+        Y_test, Y_score, 2, filepath=os.path.join('figures', CID + 'roc.jpg'),title="CNN PCA MAX pool")
 
     Y_de = decode_y(Y_test, features=enc.active_features_)
     Y_pred = model.predict(X_test)
