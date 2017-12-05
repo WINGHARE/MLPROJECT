@@ -113,6 +113,10 @@ def get_data():
     count_model = CountVectorizer(ngram_range=(1,1)) # default unigram model
     co_mat = count_model.fit_transform(texts)
 
+    # tokenizer = Tokenizer(split=' ')
+    # testX = tokenizer.texts_to_sequences(texts)
+    # print(len(testX))
+
     ## create a term dict with empty value
     term_dict = {}
     term_lst = count_model.get_feature_names()
