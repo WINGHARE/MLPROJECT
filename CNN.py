@@ -147,7 +147,7 @@ def main():
 
     # CID is used to run on the department cluster
 
-    CID = opts.cluster
+    CID = '10086'
 
     if (opts.load != 'none'): CID = opts.load
 
@@ -156,7 +156,7 @@ def main():
     print(X_train.shape)
 
     model = bulid_model(
-        X_train, X_test, Y_train, Y_test, CID, fromfile=opts.load)
+        X_train, X_test, Y_train, Y_test, CID, fromfile='weights_10086.hdf5')
 
 
     Y_score = model.predict_proba(X_test)
@@ -165,8 +165,10 @@ def main():
         Y_test, Y_score, 2, filepath=os.path.join('figures', CID + 'roc.jpg'),title="CNN PCA MAX pool")
 
     Y_de = decode_y(Y_test, features=enc.active_features_)
-    Y_pred = model.predict(X_test)
-    Y_depred = decode_y(Y_pred, features=enc.active_features_)
+    Y_depred = np.argmax(Y_score,axis=1)
+
+    print(Y_de)
+    print(np.argmax(Y_score,axis=1))
     print(classification_report(Y_de, Y_depred))
 
     return
